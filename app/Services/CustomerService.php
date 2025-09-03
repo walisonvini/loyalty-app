@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Models\Customer;
 use App\Models\Reward;
+use App\Models\RewardRedemption;
 
 use Illuminate\Support\Collection;
+
+use App\Jobs\SendCustomerPointsEmailJob;
 
 use Exception;
 
@@ -24,12 +27,11 @@ class CustomerService
     public function find(string $id): Customer
     {
         $customer = Customer::find($id);
-
-        if(!$customer)
-        {
+        
+        if (!$customer) {
             throw new Exception('Customer not found');
         }
-
+        
         return $customer;
     }
 
@@ -61,16 +63,16 @@ class CustomerService
 
         $points = intdiv(floor($amount), 5);
 
-        $customer->points_balance += $points;
-        $customer->save();
+        $customer->increment('points_balance', $points);
+
+        SendCustomerPointsEmailJob::dispatch($customer->name, $customer->email, $points)
+            ->onQueue('emails');
 
         return $points;
     }
 
-    public function redeemReward(Customer $customer, int $rewardId)
+    public function redeemReward(Customer $customer, Reward $reward): RewardRedemption
     {
-        $reward = Reward::findOrFail($rewardId);
-    
         if ($customer->points_balance < $reward->points) {
             throw new Exception('Insufficient balance to redeem reward');
         }

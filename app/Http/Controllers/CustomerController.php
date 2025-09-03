@@ -8,9 +8,11 @@ use App\Http\Requests\Customers\SearchCustomerRequest;
 use App\Http\Requests\Customers\RedeemRewardRequest;
 
 use App\Http\Resources\Customers\PointsAddedResource;
+use App\Http\Resources\Customers\RewardRedemptionResource;
 use App\Http\Resources\Customers\CustomerBalanceResource;
 
 use App\Services\CustomerService;
+use App\Services\RewardService;
 
 use App\Traits\ApiResponse;
 
@@ -19,7 +21,8 @@ class CustomerController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private CustomerService $customerService
+        private CustomerService $customerService,
+        private RewardService $rewardService
     ){}
 
     public function index()
@@ -36,10 +39,10 @@ class CustomerController extends Controller
         return $this->successResponse($customer, 'Customer created successfully');
     }
 
-    public function show(string $id)
+    public function show(string $customerId)
     {
         try {
-            $customer = $this->customerService->find($id);
+            $customer = $this->customerService->find($customerId);
 
             return $this->successResponse($customer, 'Customer found successfully');
         } catch (\Exception $e) {
@@ -58,10 +61,10 @@ class CustomerController extends Controller
         }
     }
 
-    public function addPoints(AddPointsRequest $request, string $id)
+    public function addPoints(AddPointsRequest $request, string $customerId)
     {
         try {
-            $customer = $this->customerService->find($id);
+            $customer = $this->customerService->find($customerId);
 
             $pointsAdded = $this->customerService->addPoints($customer, $request->amount);
 
@@ -73,10 +76,10 @@ class CustomerController extends Controller
         }
     }
 
-    public function getBalanceWithRedemptions(string $id)
+    public function getBalanceWithRedemptions(string $customerId)
     {
         try {
-            $customer = $this->customerService->find($id);
+            $customer = $this->customerService->find($customerId);
 
             $customer->load('redemptions.reward');
 
@@ -87,17 +90,16 @@ class CustomerController extends Controller
         }
     }
 
-    public function redeemReward(RedeemRewardRequest $request, string $id)
+    public function redeemReward(RedeemRewardRequest $request, string $customerId)
     {
         try {
-            $customer = $this->customerService->find($id);
+            $customer = $this->customerService->find($customerId);
 
-            $redemption = $this->customerService->redeemReward($customer, $request->reward_id);
+            $reward = $this->rewardService->find($request->reward_id);
+
+            $redemption = $this->customerService->redeemReward($customer, $reward);
     
-            return $this->successResponse([
-                'reward' => $redemption->reward->only(['id', 'name', 'points']),
-                'points_balance' => $customer->points_balance,
-            ], 'Reward redeemed successfully');
+            return $this->successResponse(new RewardRedemptionResource($redemption), 'Reward redeemed successfully');
     
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
