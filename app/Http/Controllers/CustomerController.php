@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\Customers\StoreCustomerRequest;
 use App\Http\Requests\Customers\AddPointsRequest;
+use App\Http\Requests\Customers\SearchCustomerRequest;
 
 use App\Http\Resources\Customers\PointsAddedResource;
 
@@ -36,7 +37,13 @@ class CustomerController extends Controller
 
     public function show(string $id)
     {
-        
+        try {
+            $customer = $this->customerService->find($id);
+
+            return $this->successResponse($customer, 'Customer found successfully');
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
     }
 
     public function update(Request $request, string $id)
@@ -49,10 +56,25 @@ class CustomerController extends Controller
         
     }
 
-    public function addPoints(AddPointsRequest $request, Customer $customer)
+    public function search(SearchCustomerRequest $request)
     {
         try {
+            $customer = $this->customerService->search($request->validated('query'));
+
+            return $this->successResponse($customer, 'Customers found successfully');
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
+    }
+
+    public function addPoints(AddPointsRequest $request, string $customerId)
+    {
+        try {
+            $customer = $this->customerService->find($customerId);
+
             $pointsAdded = $this->customerService->addPoints($customer, $request->amount);
+
+            $customer->refresh();
 
             return $this->successResponse(new PointsAddedResource($customer, $pointsAdded), 'Points added successfully');
         } catch (\InvalidArgumentException $e) {

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Customers;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddPointsRequest extends FormRequest
+class SearchCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class AddPointsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric']
+            'query' => ['required', 'string']
         ];
     }
 }

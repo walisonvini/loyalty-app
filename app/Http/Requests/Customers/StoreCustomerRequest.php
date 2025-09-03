@@ -22,10 +22,10 @@ class StoreCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'  => 'required|string|max:150',
-            'email' => 'required|email|unique:customers,email',
-            'cpf'   => 'required|string|max:14|unique:customers,cpf',
-            'phone' => 'nullable|string|max:20',
+            'name'  => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'unique:customers,email'],
+            'cpf' => ['required', 'digits:11', 'unique:customers,cpf'],
+            'phone' => ['nullable', 'string', 'max:20'],
         ];
     }
 }

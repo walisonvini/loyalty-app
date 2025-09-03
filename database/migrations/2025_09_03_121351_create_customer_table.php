@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 150);
             $table->string('email', 150)->unique();
-            $table->string('cpf', 14)->unique();
+            $table->string('cpf', 11)->unique();
             $table->string('phone', 20)->nullable();
             $table->unsignedInteger('points_balance')->default(0);
             $table->timestamps();
