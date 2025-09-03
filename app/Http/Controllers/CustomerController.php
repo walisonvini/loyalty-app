@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\Customers\StoreCustomerRequest;
+use App\Http\Requests\Customers\AddPointsRequest;
+
+use App\Http\Resources\Customers\PointsAddedResource;
 
 use App\Services\CustomerService;
 
 use App\Traits\ApiResponse;
+
+use App\Models\Customer;
 
 class CustomerController extends Controller
 {
@@ -42,5 +47,16 @@ class CustomerController extends Controller
     public function destroy(string $id)
     {
         
+    }
+
+    public function addPoints(AddPointsRequest $request, Customer $customer)
+    {
+        try {
+            $pointsAdded = $this->customerService->addPoints($customer, $request->amount);
+
+            return $this->successResponse(new PointsAddedResource($customer, $pointsAdded), 'Points added successfully');
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
     }
 }
