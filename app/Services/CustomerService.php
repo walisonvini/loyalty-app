@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Models\Customer;
+use App\Models\Reward;
 
 use Illuminate\Support\Collection;
 
-use InvalidArgumentException;
+use Exception;
 
 class CustomerService
 {
@@ -15,13 +16,18 @@ class CustomerService
         return Customer::create($data);
     }
 
+    public function all(): Collection
+    {
+        return Customer::all();
+    }
+
     public function find(string $id): Customer
     {
         $customer = Customer::find($id);
 
         if(!$customer)
         {
-            throw new InvalidArgumentException('Customer not found');
+            throw new Exception('Customer not found');
         }
 
         return $customer;
@@ -41,7 +47,7 @@ class CustomerService
 
         if($customer->isEmpty())
         {
-            throw new InvalidArgumentException('Customer not found with the provided criteria');
+            throw new Exception('Customer not found with the provided criteria');
         }
 
         return $customer;
@@ -50,7 +56,7 @@ class CustomerService
     public function addPoints(Customer $customer, float $amount): int
     {
         if ($amount < 5) {
-            throw new InvalidArgumentException('Insufficient amount to generate points');
+            throw new Exception('Insufficient amount to generate points');
         }
 
         $points = intdiv(floor($amount), 5);
@@ -60,4 +66,21 @@ class CustomerService
 
         return $points;
     }
+
+    public function redeemReward(Customer $customer, int $rewardId)
+    {
+        $reward = Reward::findOrFail($rewardId);
+    
+        if ($customer->points_balance < $reward->points) {
+            throw new Exception('Insufficient balance to redeem reward');
+        }
+    
+        $redemption = $customer->redemptions()->create([
+            'reward_id' => $reward->id,
+        ]);
+    
+        $customer->decrement('points_balance', $reward->points);
+    
+        return $redemption;
+    }    
 }

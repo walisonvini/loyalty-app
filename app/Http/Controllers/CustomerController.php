@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\Customers\StoreCustomerRequest;
 use App\Http\Requests\Customers\AddPointsRequest;
 use App\Http\Requests\Customers\SearchCustomerRequest;
+use App\Http\Requests\Customers\RedeemRewardRequest;
 
 use App\Http\Resources\Customers\PointsAddedResource;
+use App\Http\Resources\Customers\CustomerBalanceResource;
 
 use App\Services\CustomerService;
 
 use App\Traits\ApiResponse;
-
-use App\Models\Customer;
 
 class CustomerController extends Controller
 {
@@ -25,7 +24,9 @@ class CustomerController extends Controller
 
     public function index()
     {
-        
+        $customers = $this->customerService->all();
+
+        return $this->successResponse($customers, 'Customers found successfully');
     }
 
     public function store(StoreCustomerRequest $request)
@@ -41,19 +42,9 @@ class CustomerController extends Controller
             $customer = $this->customerService->find($id);
 
             return $this->successResponse($customer, 'Customer found successfully');
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404);
         }
-    }
-
-    public function update(Request $request, string $id)
-    {
-        
-    }
-
-    public function destroy(string $id)
-    {
-        
     }
 
     public function search(SearchCustomerRequest $request)
@@ -62,23 +53,54 @@ class CustomerController extends Controller
             $customer = $this->customerService->search($request->validated('query'));
 
             return $this->successResponse($customer, 'Customers found successfully');
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404);
         }
     }
 
-    public function addPoints(AddPointsRequest $request, string $customerId)
+    public function addPoints(AddPointsRequest $request, string $id)
     {
         try {
-            $customer = $this->customerService->find($customerId);
+            $customer = $this->customerService->find($id);
 
             $pointsAdded = $this->customerService->addPoints($customer, $request->amount);
 
             $customer->refresh();
 
             return $this->successResponse(new PointsAddedResource($customer, $pointsAdded), 'Points added successfully');
-        } catch (\InvalidArgumentException $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
+
+    public function getBalanceWithRedemptions(string $id)
+    {
+        try {
+            $customer = $this->customerService->find($id);
+
+            $customer->load('redemptions.reward');
+
+            return $this->successResponse(new CustomerBalanceResource($customer), 'Customer balance found successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
+    }
+
+    public function redeemReward(RedeemRewardRequest $request, string $id)
+    {
+        try {
+            $customer = $this->customerService->find($id);
+
+            $redemption = $this->customerService->redeemReward($customer, $request->reward_id);
+    
+            return $this->successResponse([
+                'reward' => $redemption->reward->only(['id', 'name', 'points']),
+                'points_balance' => $customer->points_balance,
+            ], 'Reward redeemed successfully');
+    
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }    
 }
