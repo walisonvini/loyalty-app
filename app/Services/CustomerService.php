@@ -9,6 +9,7 @@ use App\Models\RewardRedemption;
 use Illuminate\Support\Collection;
 
 use App\Jobs\SendCustomerPointsEmailJob;
+use App\Jobs\SendCustomerRewardEmailJob;
 
 use Exception;
 
@@ -82,6 +83,9 @@ class CustomerService
         ]);
     
         $customer->decrement('points_balance', $reward->points);
+
+        SendCustomerRewardEmailJob::dispatch($customer->name, $customer->email, $reward->name)
+            ->onQueue('emails');
     
         return $redemption;
     }    

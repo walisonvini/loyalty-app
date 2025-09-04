@@ -31,24 +31,42 @@
             text-align: center;
             margin: 0 0 25px 0;
         }
-        .celebration-image img {
-            max-width: 280px;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        h1 {
+        .reward-icon {
+            font-size: 72px;
             color: #6A4CFF;
-            font-size: 36px;
+            margin-bottom: 10px;
             text-align: center;
-            margin: 0;
-            font-weight: bold;
+        }
+        .hero-title {
+            color: #6A4CFF !important;
+            font-size: 36px !important;
+            text-align: center !important;
+            margin: 0 !important;
+            font-weight: bold !important;
+            font-family: 'Arial', sans-serif !important;
+        }
+        h1.hero-title {
+            color: #6A4CFF !important;
+            font-size: 36px !important;
+            text-align: center !important;
+            margin: 0 !important;
+            font-weight: bold !important;
+            font-family: 'Arial', sans-serif !important;
         }
         .content-section {
             padding: 50px 30px;
             text-align: center;
         }
-        .points-highlight {
+        .footer {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            line-height: 1.4;
+        }
+        .reward-highlight {
             background-color: #f8f9fa;
             color: #333;
             padding: 35px 25px;
@@ -57,8 +75,8 @@
             border: 3px solid #6A4CFF;
             text-align: center;
         }
-        .points-number {
-            font-size: 48px;
+        .reward-name {
+            font-size: 28px;
             font-weight: bold;
             margin: 15px 0;
             color: #6A4CFF;
@@ -102,21 +120,21 @@
     <div class="container">
         <div class="hero-section">
             <div class="celebration-image">
-                <img src="{{ asset('images/voceganhou.png') }}" alt="🎉 Parabéns pelos pontos ganhos!">
+                <div class="reward-icon">🎁</div>
             </div>
-            <h1>Parabéns, {{ $customerName }}!</h1>
+            <h1 class="hero-title">Parabéns, {{ $customerName }}!</h1>
         </div>
         
         <div class="content-section">
             <div class="points-highlight">
-                <p>Você acaba de ganhar</p>
-                <div class="points-number">{{ $points }} ponto(s)</div>
+                <p>Você acabou de resgatar o prêmio</p>
+                <div class="points-number">{{ $rewardName }}</div>
                 <p>no nosso programa de fidelidade!</p>
             </div>
             
-            <p>Continue acumulando para desbloquear prêmios incríveis!</p>
+            <p>Continue acumulando para resgatar mais prêmios incríveis!</p>
             
-            <a href="https://clientes.fidelizii.com.br" class="btn">Ver meus pontos</a>
+            <a href="https://clientes.fidelizii.com.br" class="btn">Ver meus prêmios</a>
             
             <div class="footer">
                 Você está recebendo este e-mail porque é participante do programa de fidelidade da Fidelizii.

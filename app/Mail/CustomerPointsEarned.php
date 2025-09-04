@@ -22,10 +22,7 @@ class CustomerPointsEarned extends Mailable
     public function build()
     {
         return $this->subject('Você ganhou pontos!')
-                    ->view('emails.points_earned')
-                    ->with([
-                        'customerName' => $this->customerName,
-                        'points' => $this->points,
-                    ]);
+                    ->view('emails.points_earned');
     }
+
 }
