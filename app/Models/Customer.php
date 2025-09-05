@@ -23,4 +23,9 @@ class Customer extends Model
     {
         return $this->hasMany(RewardRedemption::class);
     }
+
+    public function emailTrackings()
+    {
+        return $this->hasMany(EmailTracking::class);
+    }
 }

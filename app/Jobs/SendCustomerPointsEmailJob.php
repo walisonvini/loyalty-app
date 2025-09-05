@@ -15,24 +15,36 @@ use App\Mail\CustomerPointsEarned;
 
 use Illuminate\Foundation\Bus\Dispatchable;
 
+use App\Services\EmailTrackingService;
+
+use App\Models\Customer;
+
 class SendCustomerPointsEmailJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels, Dispatchable;
 
-    public $customerName;
-    public $customerEmail;
+    public $customer;
     public $points;
 
-    public function __construct(string $customerName, string $customerEmail, int $points)
+    public function __construct(Customer $customer, int $points)
     {
-        $this->customerName = $customerName;
-        $this->customerEmail = $customerEmail;
+        $this->customer = $customer;
         $this->points = $points;
     }
 
-    public function handle()
+    public function handle(EmailTrackingService $tracking)
     {
-        Mail::to($this->customerEmail)
-            ->send(new CustomerPointsEarned($this->customerName, $this->points));
+        try {
+            Mail::to($this->customer->email)
+            ->send(new CustomerPointsEarned($this->customer->name, $this->points));
+
+            $tracking->log($this->customer, 'points_earned', 'sent', [
+                'points' => $this->points
+            ]);
+        } catch (\Exception $e) {
+            $tracking->log($this->customer, 'points_earned', 'failed', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

@@ -66,7 +66,7 @@ class CustomerService
 
         $customer->increment('points_balance', $points);
 
-        SendCustomerPointsEmailJob::dispatch($customer->name, $customer->email, $points)
+        SendCustomerPointsEmailJob::dispatch($customer, $points)
             ->onQueue('emails');
 
         return $points;
@@ -84,7 +84,7 @@ class CustomerService
     
         $customer->decrement('points_balance', $reward->points);
 
-        SendCustomerRewardEmailJob::dispatch($customer->name, $customer->email, $reward->name)
+        SendCustomerRewardEmailJob::dispatch($customer, $reward->name)
             ->onQueue('emails');
     
         return $redemption;
