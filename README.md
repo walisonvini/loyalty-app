@@ -1,6 +1,6 @@
 # Loyalty App
 
-## Description
+## Descrição
 
 Sistema de programa de fidelidade desenvolvido em Laravel que permite gerenciar clientes, pontos e recompensas.
 
