@@ -56,9 +56,8 @@ cp .env.example .env
     ```
 
 3. Instalar dependências PHP
-Não é necessário ter **PHP** instalado localmente, pois o comando roda dentro de um container Docker.
-
 ```bash
+#Não é necessário ter **PHP** instalado localmente, pois o comando roda dentro de um container Docker.
 docker run --rm \
     -u "$(id -u):$(id -g)" \
     -v $(pwd):/var/www/html \
