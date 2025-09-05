@@ -81,7 +81,9 @@ class CustomerController extends Controller
         try {
             $customer = $this->customerService->find($customerId);
 
-            $customer->load('redemptions.reward');
+            $customer->load(['redemptions' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }, 'redemptions.reward']);
 
             return $this->successResponse(new CustomerBalanceResource($customer), 'Customer balance found successfully');
 
