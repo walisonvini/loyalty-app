@@ -126,9 +126,9 @@
         </div>
         
         <div class="content-section">
-            <div class="points-highlight">
+            <div class="reward-highlight">
                 <p>Você acabou de resgatar o prêmio</p>
-                <div class="points-number">{{ $rewardName }}</div>
+                <div class="reward-name">{{ $rewardName }}</div>
                 <p>no nosso programa de fidelidade!</p>
             </div>
             

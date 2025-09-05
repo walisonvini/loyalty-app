@@ -19,6 +19,7 @@ Sistema de programa de fidelidade desenvolvido em Laravel que permite gerenciar 
 * **PHP** `^8.2`
 * **Composer** `^8.0`
 * **MySQL**
+* **Redis**
 
 ### Opção 2: Desenvolvimento com Docker
 * **Docker** `^24.0`
@@ -34,25 +35,25 @@ cp .env.example .env
 2. Configure seu arquivo .env
     ```bash
     # Atualize as credenciais do banco de dados para Docker:
-    # DB_CONNECTION=mysql
-    # DB_HOST=mysql
-    # DB_PORT=3306
-    # DB_DATABASE=seu_nome_do_banco
-    # DB_USERNAME=seu_usuario
-    # DB_PASSWORD=sua_senha
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=seu_nome_do_banco
+    DB_USERNAME=seu_usuario
+    DB_PASSWORD=sua_senha
 
     # Configurações do Redis para filas:
-    # QUEUE_CONNECTION=redis
-    # REDIS_CLIENT=phpredis
-    # REDIS_HOST=redis
-    # REDIS_PASSWORD=null
-    # REDIS_PORT=6379
+    QUEUE_CONNECTION=redis
+    REDIS_CLIENT=phpredis
+    REDIS_HOST=redis
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
 
     # Configurações de email para notificações:
-    # MAIL_MAILER=smtp
-    # MAIL_SCHEME=null
-    # MAIL_HOST=mailpit
-    # MAIL_PORT=1025
+    MAIL_MAILER=smtp
+    MAIL_SCHEME=null
+    MAIL_HOST=mailpit
+    MAIL_PORT=1025
     ```
 
 3. Instalar dependências PHP
