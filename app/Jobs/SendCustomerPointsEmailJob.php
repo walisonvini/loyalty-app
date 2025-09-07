@@ -19,6 +19,8 @@ use App\Services\EmailTrackingService;
 
 use App\Models\Customer;
 
+use App\Enums\EmailStatus;
+
 class SendCustomerPointsEmailJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels, Dispatchable;
@@ -38,11 +40,11 @@ class SendCustomerPointsEmailJob implements ShouldQueue
             Mail::to($this->customer->email)
             ->send(new CustomerPointsEarned($this->customer->name, $this->points));
 
-            $tracking->log($this->customer, 'points_earned', 'sent', [
+            $tracking->log($this->customer, 'points_earned', EmailStatus::Sent, [
                 'points' => $this->points
             ]);
         } catch (\Exception $e) {
-            $tracking->log($this->customer, 'points_earned', 'failed', [
+            $tracking->log($this->customer, 'points_earned', EmailStatus::Failed, [
                 'error' => $e->getMessage(),
             ]);
         }

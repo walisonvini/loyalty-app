@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomerRewardRedeemed;
 use App\Models\Customer;
 use App\Services\EmailTrackingService;
+use App\Enums\EmailStatus;
 
 class SendCustomerRewardEmailJob implements ShouldQueue
 {
@@ -31,11 +32,11 @@ class SendCustomerRewardEmailJob implements ShouldQueue
             Mail::to($this->customer->email)
             ->send(new CustomerRewardRedeemed($this->customer->name, $this->rewardName));
 
-            $tracking->log($this->customer, 'reward_redeemed', 'sent', [
+            $tracking->log($this->customer, 'reward_redeemed', EmailStatus::Sent, [
                 'reward_name' => $this->rewardName
             ]);
         } catch (\Exception $e) {
-            $tracking->log($this->customer, 'reward_redeemed', 'failed', [
+            $tracking->log($this->customer, 'reward_redeemed', EmailStatus::Failed, [
                 'error' => $e->getMessage(),
             ]);
         }

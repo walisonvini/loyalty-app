@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Enums\EmailStatus;
 
 class SendMaxRewardEligibleEmailJob implements ShouldQueue
 {
@@ -35,11 +36,11 @@ class SendMaxRewardEligibleEmailJob implements ShouldQueue
             Mail::to($this->customer->email)
                 ->send(new MaxRewardEligibleMail($this->customer->name, $this->reward->name));
 
-            $tracking->log($this->customer, 'max_reward_eligible', 'sent', [
+            $tracking->log($this->customer, 'max_reward_eligible', EmailStatus::Sent, [
                 'reward' => $this->reward->name,
             ]);
         } catch (\Exception $e) {
-            $tracking->log($this->customer, 'max_reward_eligible', 'failed', [
+            $tracking->log($this->customer, 'max_reward_eligible', EmailStatus::Failed, [
                 'error' => $e->getMessage(),
             ]);
         }

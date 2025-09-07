@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Enums\EmailStatus;
+
 return new class extends Migration
 {
     /**
@@ -18,7 +20,7 @@ return new class extends Migration
 
             $table->string('email');
             $table->string('type');
-            $table->string('status')->default('pending');
+            $table->enum('status', array_column(EmailStatus::cases(), 'value'))->default(EmailStatus::Pending->value);
             $table->json('meta')->nullable();
             
             $table->timestamp('sent_at')->nullable();
