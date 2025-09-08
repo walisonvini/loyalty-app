@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rewards', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('points');
+            $table->unsignedInteger('points');
             $table->text('description')->nullable();
             $table->timestamps();
 

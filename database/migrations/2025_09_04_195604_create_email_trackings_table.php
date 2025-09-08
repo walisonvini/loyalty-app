@@ -18,8 +18,8 @@ return new class extends Migration
 
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
 
-            $table->string('email');
-            $table->string('type');
+            $table->string('email', 150);
+            $table->string('type', 50);
             $table->enum('status', array_column(EmailStatus::cases(), 'value'))->default(EmailStatus::Pending->value);
             $table->json('meta')->nullable();
             
