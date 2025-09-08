@@ -11,6 +11,8 @@ use Illuminate\Support\Collection;
 use App\Jobs\SendCustomerPointsEmailJob;
 use App\Jobs\SendCustomerRewardEmailJob;
 
+use Illuminate\Support\Facades\DB;
+
 use Exception;
 
 class CustomerService
@@ -74,19 +76,22 @@ class CustomerService
 
     public function redeemReward(Customer $customer, Reward $reward): RewardRedemption
     {
-        if ($customer->points_balance < $reward->points) {
-            throw new Exception('Insufficient balance to redeem reward');
-        }
-    
-        $redemption = $customer->redemptions()->create([
-            'reward_id' => $reward->id,
-        ]);
-    
-        $customer->decrement('points_balance', $reward->points);
+        return DB::transaction(function () use ($customer, $reward) {
+            
+            if ($customer->points_balance < $reward->points) {
+                throw new Exception('Insufficient balance to redeem reward');
+            }
+        
+            $redemption = $customer->redemptions()->create([
+                'reward_id' => $reward->id,
+            ]);
+        
+            $customer->decrement('points_balance', $reward->points);
 
-        SendCustomerRewardEmailJob::dispatch($customer, $reward->name)
-            ->onQueue('emails');
-    
-        return $redemption;
-    }    
+            SendCustomerRewardEmailJob::dispatch($customer, $reward->name)
+                ->onQueue('emails');
+        
+            return $redemption;
+        });
+    }
 }
