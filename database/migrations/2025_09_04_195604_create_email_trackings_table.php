@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->string('email', 150);
             $table->string('type', 50);
-            $table->enum('status', array_column(EmailStatus::cases(), 'value'))->default(EmailStatus::Pending->value);
+            $table->enum('status', EmailStatus::cases())->default(EmailStatus::Pending);
             $table->json('meta')->nullable();
             
             $table->timestamp('sent_at')->nullable();
@@ -30,6 +30,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     * 
+     * 
      */
     public function down(): void
     {
